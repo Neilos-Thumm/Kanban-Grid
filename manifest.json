@@ -1,0 +1,10 @@
+{
+  "id": "kanban-grid",
+  "name": "Kanban Grid",
+  "version": "0.3.0",
+  "minAppVersion": "1.5.0",
+  "description": "Weekly Kanban boards on one pan-and-zoom canvas. Tick tasks, or click a board to edit it in place.",
+  "author": "Parun Thummadetsak",
+  "authorUrl": "https://nileparun.com",
+  "isDesktopOnly": false
+}

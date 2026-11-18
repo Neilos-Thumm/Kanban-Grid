@@ -1,0 +1,244 @@
+/* Kanban Grid: an infinite canvas of weekly boards. The boards themselves use
+   the Kanban plugin's own class names, so its stylesheet styles them. */
+
+.workspace-leaf-content[data-type='kanban-grid-view'] > .view-content.kgrid-view-content {
+  padding: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ---------------------------------------------------------------- canvas */
+
+.kgrid-viewport {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+  background-color: var(--background-primary);
+  background-image: radial-gradient(circle, var(--background-modifier-border) 1px, transparent 1.2px);
+}
+
+.kgrid-viewport.is-panning,
+.kgrid-viewport.is-panning * {
+  cursor: grabbing !important;
+}
+
+.kgrid-world {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  display: grid;
+  grid-template-columns: repeat(var(--kgrid-columns, 3), max-content);
+  gap: 48px;
+  width: max-content;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Only promote to a GPU layer while moving, so text is crisp at rest. */
+.kgrid-world.is-moving {
+  will-change: transform;
+}
+
+.kgrid-world input.task-list-item-checkbox,
+.kgrid-world .view-header-title,
+.kgrid-world .view-action,
+.kgrid-world a {
+  cursor: pointer;
+}
+
+/* --------------------------------------------------------------- overlay */
+
+.kgrid-overlay {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: var(--radius-m);
+  background-color: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  box-shadow: var(--shadow-s);
+  cursor: default;
+  font-size: var(--font-ui-small);
+}
+
+.kgrid-overlay-top {
+  top: 12px;
+  left: 12px;
+  padding-inline-start: 10px;
+}
+
+.kgrid-overlay-bottom {
+  bottom: 12px;
+  left: 12px;
+}
+
+.kgrid-label {
+  color: var(--text-muted);
+  margin-inline-end: 6px;
+  white-space: nowrap;
+}
+
+.kgrid-overlay .kgrid-semester {
+  font-size: var(--font-ui-smaller);
+}
+
+.kgrid-overlay .kgrid-btn {
+  background: transparent;
+  box-shadow: none;
+  padding: 4px 6px;
+  height: auto;
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+}
+
+.kgrid-overlay .kgrid-btn:hover {
+  background-color: var(--background-modifier-hover);
+  color: var(--text-normal);
+}
+
+.kgrid-overlay .kgrid-zoom-label {
+  min-width: 3.5em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------------- boards */
+
+.kgrid-board {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  background-color: var(--background-primary);
+  overflow: hidden;
+  contain: layout paint style;
+}
+
+.kgrid-lite-wrap {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.kgrid-lite-body {
+  flex: 1;
+}
+
+.kgrid-board:not(.is-live):hover {
+  border-color: var(--background-modifier-border-hover);
+}
+
+.kgrid-board.is-live {
+  border-color: var(--interactive-accent);
+}
+
+/* Live board: a real Kanban view hosted on the canvas. It behaves like a
+   normal tab, so drags, text selection and scrolling stay inside it. */
+.kgrid-live-wrap {
+  position: relative;
+  resize: vertical;
+  overflow: hidden;
+  min-height: 200px;
+  cursor: auto;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.kgrid-live-wrap > .kgrid-live-split {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.kgrid-live-wrap .workspace-leaf {
+  height: 100%;
+}
+
+/* Header that mimics a leaf's view header. */
+.kgrid-view-header.view-header {
+  display: flex;
+  align-items: center;
+  height: var(--header-height, 40px);
+  padding: 0 var(--size-4-3);
+  gap: var(--size-4-2);
+  border-bottom: var(--tab-outline-width, 1px) solid var(--tab-outline-color, var(--background-modifier-border));
+  background-color: var(--background-primary);
+  font-size: var(--font-ui-small);
+}
+
+.kgrid-view-header .view-header-title-container {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  color: var(--text-muted);
+  gap: 4px;
+}
+
+.kgrid-view-header .view-header-title {
+  color: var(--text-normal);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kgrid-view-header .view-header-title:hover {
+  text-decoration: underline;
+}
+
+.kgrid-view-header .view-actions {
+  display: flex;
+  gap: 2px;
+}
+
+/* The board grows with its content instead of scrolling inside a leaf. */
+.kgrid-lite.kanban-plugin {
+  height: auto;
+  contain: layout style;
+}
+
+.kgrid-lite .kanban-plugin__board,
+.kgrid-lite .kanban-plugin__board > div {
+  height: auto;
+}
+
+.kgrid-lite .kanban-plugin__lane-wrapper {
+  max-height: none;
+}
+
+.kgrid-lite .kanban-plugin__lane-items {
+  overflow: visible;
+}
+
+.kgrid-lite .kanban-plugin__lane-wrapper:last-child {
+  margin-inline-end: 0;
+}
+
+.kgrid-lite p:last-child,
+.kgrid-lite ul:last-child {
+  margin-bottom: 0;
+}
+
+.kgrid-empty,
+.kgrid-message {
+  padding: 1rem;
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+  white-space: pre-wrap;
+}
+
+/* Notes that still contain the old code block. */
+.kgrid-codeblock {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+}
